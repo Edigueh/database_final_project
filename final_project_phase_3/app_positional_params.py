@@ -1,11 +1,12 @@
 import os
 from dataclasses import dataclass
 from pathlib import Path
+from typing import LiteralString
 
 import psycopg
 import typer
 from dotenv import load_dotenv
-from psycopg import Connection
+from psycopg import Connection, Cursor
 from psycopg.rows import TupleRow
 from tabulate import tabulate
 
@@ -13,7 +14,7 @@ from tabulate import tabulate
 @dataclass(frozen=True)
 class Query:
     title: str
-    sql: str
+    sql: LiteralString
     parameter_prompt: str | None = None
 
 DATABASE_ENV_VAR: str = "DATABASE_URL"
@@ -174,7 +175,9 @@ ORDER BY v.NotaMedia DESC;""",
 )
 
 
-def execute_query(cursor, sql, params=None):
+def execute_query(
+    cursor: Cursor[TupleRow], sql: LiteralString, params: tuple[str] | None = None
+) -> tuple[list[str], list[TupleRow]]:
     if params is None:
         cursor.execute(sql)
     else:
@@ -186,19 +189,19 @@ def execute_query(cursor, sql, params=None):
     return [column.name for column in cursor.description], cursor.fetchall()
 
 
-def display_results(columns, rows):
+def display_results(columns: list[str], rows: list[TupleRow]):
     if not rows:
         typer.echo("Sem resultados.")
         return
 
-    values = [["NULL" if value is None else value for value in row] for row in rows]
+    values: list[list[object]] = [["NULL" if value is None else value for value in row] for row in rows]
     typer.echo(tabulate(values, headers=columns, tablefmt="fancy_grid"))
 
 
-def run_menu(connection: Connection[TupleRow], database_error):
+def run_menu(connection: Connection[TupleRow]):
     while True:
         typer.echo("\nConsultas da Parte II")
-        menu = [(number, query.title) for number, query in enumerate(QUERIES, start=1)]
+        menu: list[tuple[int, str]] = [(number, query.title) for number, query in enumerate(QUERIES, start=1)]
         menu.append((0, "Sair"))
         typer.echo(
             tabulate(menu, headers=("Opção", "Consulta"), tablefmt="fancy_grid")
@@ -219,7 +222,7 @@ def run_menu(connection: Connection[TupleRow], database_error):
         try:
             with connection.cursor() as cursor:
                 columns, rows = execute_query(cursor, query.sql, params)
-        except database_error as error:
+        except psycopg.Error as error:
             typer.echo(f"Erro ao executar a consulta: {error}")
             continue
 
@@ -236,7 +239,7 @@ def main() -> None:
 
     try:
         with psycopg.connect(database_url, autocommit=True) as connection:
-            run_menu(connection, psycopg.Error)
+            run_menu(connection)
     except psycopg.Error as error:
         typer.echo(f"Erro ao conectar ao PostgreSQL: {error}", err=True)
         raise typer.Exit(code=1) from error

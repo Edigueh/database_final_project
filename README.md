@@ -10,7 +10,7 @@ Use a URI PostgreSQL do Supabase em **Project Settings → Database → Connecti
 
 ## Requisitos
 
-- Python 3.10 ou superior.
+- Python 3.11 ou superior.
 - Dependências listadas em `requirements.txt`.
 - A variável `DATABASE_URL`, definida no ambiente ou em um arquivo `.env` nesta pasta.
 
