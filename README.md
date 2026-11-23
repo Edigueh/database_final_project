@@ -1,6 +1,6 @@
 # Parte III — aplicativo de consultas
 
-Este CLI em Python executa as dez consultas da Parte II em um banco PostgreSQL. O programa mantém uma conexão aberta enquanto o menu está em uso. As consultas ficam em `app.py`; o esquema e as instâncias de teste de origem estão em [`tabelas.sql`](../final_project_phase_1-2/tabelas.sql) e [`consultas.sql`](../final_project_phase_1-2/consultas.sql).
+Este CLI em Python executa as dez consultas da Parte II em um banco PostgreSQL. O programa mantém uma conexão aberta enquanto o menu está em uso. As consultas ficam em `app.py`; o esquema e as instâncias de teste de origem estão em [`tabelas.sql`](final_project_phase_1-2/tabelas.sql) e [`consultas.sql`](final_project_phase_1-2/consultas.sql).
 
 ## Banco de dados
 
