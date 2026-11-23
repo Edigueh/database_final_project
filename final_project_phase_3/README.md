@@ -1,32 +1,36 @@
-# Parte III — acesso às consultas
+# Parte III — aplicativo de consultas
 
-O programa é um CLI em Python que executa as dez consultas da Parte II no PostgreSQL do Supabase. Ele usa Psycopg 3 diretamente e envia os valores das consultas parametrizadas separadamente do SQL.
+Este CLI em Python executa as dez consultas da Parte II em um banco PostgreSQL. O programa mantém uma conexão aberta enquanto o menu está em uso. As consultas ficam em `app.py`; o esquema e as instâncias de teste de origem estão em [`tabelas.sql`](../final_project_phase_1-2/tabelas.sql) e [`consultas.sql`](../final_project_phase_1-2/consultas.sql).
+
+## Banco de dados
+
+Antes de iniciar, configure o banco com as tabelas, a visão `vw_resumo_avaliacoes_obras` e os dados necessários à consulta escolhida. O aplicativo não cria nem preenche o banco. O arquivo `consultas.sql` contém a definição da visão, os dados de exemplo e as consultas da Parte II.
+
+Use a URI PostgreSQL do Supabase em **Project Settings → Database → Connection string → URI**, com conexão direta ou Session Pooler e `sslmode=require`. Codifique caracteres especiais da senha na URI.
 
 ## Requisitos
 
 - Python 3.10 ou superior.
-- Projeto Supabase com as tabelas, a visão vw_resumo_avaliacoes_obras e os dados de teste da Parte II carregados.
-- URI de conexão PostgreSQL do Supabase, obtida em **Project Settings → Database → Connection string → URI**. Use a conexão direta ou a Session Pooler; a URI deve usar SSL (sslmode=require). Se a senha tiver caracteres especiais, use a URI copiada pelo painel ou codifique esses caracteres.
-
-Não use as chaves anon ou service_role: elas não são credenciais de conexão PostgreSQL. Não grave a URI no código nem a envie ao repositório.
+- Dependências listadas em `requirements.txt`.
+- A variável `DATABASE_URL`, definida no ambiente ou em um arquivo `.env` nesta pasta.
 
 ## Instalação e execução
 
-Na pasta final_project_phase_3:
+Na pasta `final_project_phase_3`, instale as dependências:
 
-    python3 -m pip install -r requirements.txt
-    read -s 'DATABASE_URL?URI do Supabase: '
-    export DATABASE_URL
-    python3 app.py
-    unset DATABASE_URL
+```sh
+python3 -m pip install -r requirements.txt
+```
 
-O valor lido pelo terminal não aparece na tela nem fica escrito no comando. O programa mantém uma conexão durante o menu e encerra ao selecionar 0.
+No zsh, solicite a URI sem exibi-la no terminal e inicie o programa:
 
-## Consultas parametrizadas
+```zsh
+read -s 'DATABASE_URL?URI do Supabase: '
+export DATABASE_URL
+python3 app.py
+unset DATABASE_URL
+```
 
-- Consulta 6: informe uma categoria, por exemplo Cyberpunk_C6.
-- Consulta 10: informe o nome da obra principal, por exemplo The Dark Side of the Moon_C10.
+Como alternativa, defina `DATABASE_URL` em `final_project_phase_3/.env`. O programa lê esse arquivo ao iniciar.
 
-As duas usam placeholders %s do Psycopg e cursor.execute(sql, (valor,)). As demais consultas são enviadas sem parâmetros. O resultado mostra os nomes das colunas e os valores retornados; consultas sem linhas exibem Sem resultados.
-
-Execute as verificações locais com python3 -m unittest discover -s .
+O menu oferece as consultas de 1 a 10; selecione `0` para sair. A consulta 6 solicita uma categoria (por exemplo, `Cyberpunk_C6`) e a consulta 10 solicita o nome da obra principal (por exemplo, `The Dark Side of the Moon_C10`).
