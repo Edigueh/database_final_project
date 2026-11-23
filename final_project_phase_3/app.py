@@ -192,15 +192,17 @@ def display_results(columns, rows):
         return
 
     values = [["NULL" if value is None else value for value in row] for row in rows]
-    typer.echo(tabulate(values, headers=columns, tablefmt="grid"))
+    typer.echo(tabulate(values, headers=columns, tablefmt="fancy_grid"))
 
 
 def run_menu(connection: Connection[TupleRow], database_error):
     while True:
         typer.echo("\nConsultas da Parte II")
-        for number, query in enumerate(QUERIES, start=1):
-            typer.echo(f"{number}. {query.title}")
-        typer.echo("0. Sair")
+        menu = [(number, query.title) for number, query in enumerate(QUERIES, start=1)]
+        menu.append((0, "Sair"))
+        typer.echo(
+            tabulate(menu, headers=("Opção", "Consulta"), tablefmt="fancy_grid")
+        )
 
         selection: str = typer.prompt("Selecione uma opção").strip()
         if selection == "0":
