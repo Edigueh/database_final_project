@@ -34,3 +34,7 @@ unset DATABASE_URL
 Como alternativa, defina `DATABASE_URL` em `final_project_phase_3/.env`. O programa lê esse arquivo ao iniciar.
 
 O menu oferece as consultas de 1 a 10; selecione `0` para sair. A consulta 6 solicita uma categoria (por exemplo, `Cyberpunk_C6`) e a consulta 10 solicita o nome da obra principal (por exemplo, `The Dark Side of the Moon_C10`).
+
+#### Autores
+- André Schaidhauer Luckmann (00601117)
+- Gabriel Felipe Kellermann (00591164)
