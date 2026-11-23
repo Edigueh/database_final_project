@@ -1,9 +1,9 @@
 import os
-import sys
 from dataclasses import dataclass
 from pathlib import Path
 
 import psycopg
+import typer
 from dotenv import load_dotenv
 from psycopg import Connection
 from psycopg.rows import TupleRow
@@ -188,61 +188,59 @@ def execute_query(cursor, sql, params=None):
 
 def display_results(columns, rows):
     if not rows:
-        print("Sem resultados.")
+        typer.echo("Sem resultados.")
         return
 
     values = [["NULL" if value is None else value for value in row] for row in rows]
-    print(tabulate(values, headers=columns, tablefmt="grid"))
+    typer.echo(tabulate(values, headers=columns, tablefmt="grid"))
 
 
 def run_menu(connection: Connection[TupleRow], database_error):
     while True:
-        print("\nConsultas da Parte II")
+        typer.echo("\nConsultas da Parte II")
         for number, query in enumerate(QUERIES, start=1):
-            print(f"{number}. {query.title}")
-        print("0. Sair")
+            typer.echo(f"{number}. {query.title}")
+        typer.echo("0. Sair")
 
-        selection: str = input("Selecione uma opção: ").strip()
+        selection: str = typer.prompt("Selecione uma opção").strip()
         if selection == "0":
             return
         if not selection.isdigit() or not 1 <= int(selection) <= len(QUERIES):
-            print("Opção inválida.")
+            typer.echo("Opção inválida.")
             continue
 
         query: Query = QUERIES[int(selection) - 1]
         params: tuple[str] | None = None
         if query.parameter_prompt:
-            params = (input(f"{query.parameter_prompt}: ").strip(),)
+            params = (typer.prompt(query.parameter_prompt).strip(),)
 
         try:
             with connection.cursor() as cursor:
                 columns, rows = execute_query(cursor, query.sql, params)
         except database_error as error:
-            print(f"Erro ao executar a consulta: {error}")
+            typer.echo(f"Erro ao executar a consulta: {error}")
             continue
 
-        print(f"\n{query.title}")
+        typer.echo(f"\n{query.title}")
         display_results(columns, rows)
 
 
-def main() -> int:
+def main() -> None:
     load_dotenv(Path(__file__).with_name(".env"))
     database_url: str | None = os.getenv(DATABASE_ENV_VAR)
     if not database_url:
-        print("Defina DATABASE_URL com a URI PostgreSQL do Supabase.", file=sys.stderr)
-        return 1
+        typer.echo("Defina DATABASE_URL com a URI PostgreSQL do Supabase.", err=True)
+        raise typer.Exit(code=1)
 
     try:
         with psycopg.connect(database_url, autocommit=True) as connection:
             run_menu(connection, psycopg.Error)
     except psycopg.Error as error:
-        print(f"Erro ao conectar ao PostgreSQL: {error}", file=sys.stderr)
-        return 1
+        typer.echo(f"Erro ao conectar ao PostgreSQL: {error}", err=True)
+        raise typer.Exit(code=1) from error
     except KeyboardInterrupt:
-        print("\nPrograma encerrado.")
-
-    return 0
+        typer.echo("\nPrograma encerrado.")
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    typer.run(main)
