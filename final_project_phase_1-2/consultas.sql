@@ -4,7 +4,7 @@
 
 -- ================================================================
 -- View - Resumo de Avaliações das Obras
--- Agrupa as métricas principais de cada obra do sistema. Cruza 
+-- Agrupa as métricas principais de cada obra do sistema. Cruza
 -- dados descritivos das obras com funções de agregações de suas
 -- resenhas publicadas. Contém: nota média, número de resenhas e
 -- número total de visualizações.
@@ -24,7 +24,7 @@ JOIN Autor        a ON o.AutorID      = a.id
 JOIN Categoria    c ON o.CategoriaID  = c.id
 JOIN TipoDeObra   t ON o.TipoDeObraID = t.id
 JOIN Resenha r ON o.id           = r.ObraID
-GROUP BY o.id, o.Nome, a.Nome, c.Nome, t.Nome
+GROUP BY o.id, o.Nome, a.Nome, c.Nome, t.Nome;
 -- ================================================================
 
 -- ================================================================
@@ -33,9 +33,9 @@ GROUP BY o.id, o.Nome, a.Nome, c.Nome, t.Nome
 -- de suas obras, considerando produtoras com mais de uma obra na
 -- visão de Resumo de Avaliações das Obras.
 -- Instâncias Necessárias:
-INSERT INTO Usuario (id, Nome, Email, Senha) VALUES 
-(10, 'Ana_C1', 'ana_c1@email.com', '123'), 
-(11, 'Bruno_C1', 'bruno_c1@email.com', '123'), 
+INSERT INTO Usuario (id, Nome, Email, Senha) VALUES
+(10, 'Ana_C1', 'ana_c1@email.com', '123'),
+(11, 'Bruno_C1', 'bruno_c1@email.com', '123'),
 (12, 'Carla_C1', 'carla_c1@email.com', '123');
 
 INSERT INTO Categoria (id, Nome) VALUES
@@ -46,8 +46,8 @@ INSERT INTO TipoDeObra (id, Nome) VALUES
 (10, 'Filme_C1'), (11, 'Livro_C1')
 ON CONFLICT (Nome) DO NOTHING;
 
-INSERT INTO Autor (id, Nome, Verificado) VALUES 
-(10, 'Christopher Nolan_C1', true), 
+INSERT INTO Autor (id, Nome, Verificado) VALUES
+(10, 'Christopher Nolan_C1', true),
 (11, 'Steven Spielberg_C1', true);
 
 INSERT INTO Produtoras (id, Nome, Verificado) VALUES
@@ -96,11 +96,11 @@ INSERT INTO Categoria (id, Nome) VALUES
 (20, 'Ficção Científica_C2'), (21, 'Aventura_C2')
 ON CONFLICT (Nome) DO NOTHING;
 
-INSERT INTO TipoDeObra (id, Nome) VALUES 
+INSERT INTO TipoDeObra (id, Nome) VALUES
 (20, 'Livro_C2')
 ON CONFLICT (Nome) DO NOTHING;
 
-INSERT INTO Autor (id, Nome, Verificado) VALUES 
+INSERT INTO Autor (id, Nome, Verificado) VALUES
 (20, 'Isaac Asimov_C2', true),
 (21, 'Arthur C. Clarke_C2', true),
 (22, 'Autor Amador_C2', false);
@@ -133,7 +133,7 @@ FROM Autor a
 JOIN Obras o ON a.id = o.AutorID
 JOIN vw_resumo_avaliacoes_obras v ON o.id = v.ObraID
 WHERE a.verificado = true
-GROUP BY a.id, a.Nome
+GROUP BY a.id, a.Nome;
 -- ================================================================
 
 -- ================================================================
@@ -144,8 +144,8 @@ GROUP BY a.id, a.Nome
 -- categoria de obra existente no sistema.
 
 -- Instâncias Necessárias:
-INSERT INTO Usuario (id, Nome, Email, Senha) VALUES 
-(30, 'Alice_C3', 'alice_c3@email.com', '123'), 
+INSERT INTO Usuario (id, Nome, Email, Senha) VALUES
+(30, 'Alice_C3', 'alice_c3@email.com', '123'),
 (31, 'Beto_C3', 'beto_c3@email.com', '123');
 
 INSERT INTO Categoria (id, Nome) VALUES
@@ -175,12 +175,12 @@ INSERT INTO Resenha (id, UsuarioID, Cabecalho, Resenha, Nota, Visualizacoes, Obr
 (33, 30, 'Hilário', 'Ri muito', 10, 1000, 32, CURRENT_TIMESTAMP),
 (34, 31, 'Sem graça', 'Meh', 4, 20, 32, CURRENT_TIMESTAMP);
 
--- Justificativa: Há duas categorias nas instâncias, a avaliação 
+-- Justificativa: Há duas categorias nas instâncias, a avaliação
 -- isolada de cada grupo se dá pelo uso da subconsulta relacionando
 -- a categoria interna (de r2) com a externa (da view v).
 
 -- Comando SQL:
-SELECT 
+SELECT
     r.Cabecalho AS TituloResenha,
     u.Nome AS AutorResenha,
     r.Visualizacoes,
@@ -206,10 +206,10 @@ ORDER BY r.Visualizacoes DESC;
 -- mentários feitos por eles e a média das notas das obras em que
 -- eles interagiram. Válido para usuários que tenham mais de um
 -- comentário. O Objetivo é ter noção de qual tipo de avaliação mais
--- incentiva a interação de usuários. 
+-- incentiva a interação de usuários.
 
 -- Instâncias Necessárias:
-INSERT INTO Usuario (id, Nome, Email, Senha) VALUES 
+INSERT INTO Usuario (id, Nome, Email, Senha) VALUES
 (40, 'Lucas_C4', 'lucas_c4@email.com', '123'),
 (41, 'Mariana_C4', 'mari_c4@email.com', '123'),
 (42, 'João_C4', 'joao_c4@email.com', '123');
@@ -287,21 +287,21 @@ INSERT INTO TipoDeObra (id, Nome) VALUES
 (50, 'Livro_C5'), (51, 'Filme_C5'), (52, 'Música_C5')
 ON CONFLICT (Nome) DO NOTHING;
 
-INSERT INTO Autor (id, Nome, Verificado) VALUES 
-(50, 'Autor Multi-Tipos_C5', true), 
-(51, 'Autor Focado_C5', true), 
+INSERT INTO Autor (id, Nome, Verificado) VALUES
+(50, 'Autor Multi-Tipos_C5', true),
+(51, 'Autor Focado_C5', true),
 (52, 'Mestre das Coautorias_C5', true);
 
 -- Obra 1: Livro de Fantasia (Autor Multi-Tipos como principal)
-INSERT INTO Obras (id, Nome, Descricao, Publicacao, Capa, AutorID, TipoDeObraID, CategoriaID) 
+INSERT INTO Obras (id, Nome, Descricao, Publicacao, Capa, AutorID, TipoDeObraID, CategoriaID)
 VALUES (50, 'O Hobbit_C5', 'Aventura', '1937-09-21', 'capa1.png', 50, 50, 50);
 
 -- Obra 2: Filme de Ficção Científica (Autor Focado como principal)
-INSERT INTO Obras (id, Nome, Descricao, Publicacao, Capa, AutorID, TipoDeObraID, CategoriaID) 
+INSERT INTO Obras (id, Nome, Descricao, Publicacao, Capa, AutorID, TipoDeObraID, CategoriaID)
 VALUES (51, 'Duna_C5', 'Planeta deserto', '2021-10-22', 'capa2.png', 51, 51, 51);
 
 -- Obra 3: Música de Fantasia (Autor Focado como principal)
-INSERT INTO Obras (id, Nome, Descricao, Publicacao, Capa, AutorID, TipoDeObraID, CategoriaID) 
+INSERT INTO Obras (id, Nome, Descricao, Publicacao, Capa, AutorID, TipoDeObraID, CategoriaID)
 VALUES (52, 'The Bard Song_C5', 'Taverna', '1992-01-01', 'capa3.png', 51, 52, 50);
 
 -- Obra 4: Livro de Ficção Científica (Autor Focado como principal)
@@ -314,11 +314,11 @@ INSERT INTO Coautoria (AutorID, ObraID) VALUES (50, 51), (50, 52);
 -- Mestre das Coautorias atua como coautor nos Livros 1 e 4
 INSERT INTO Coautoria (AutorID, ObraID) VALUES (52, 50), (52, 53);
 
--- Justificativa: 
+-- Justificativa:
 -- O Autor focado, não possui nenhuma coautoria mas atua como principal em
 -- 3 obras diferentes. O Autor Multi-Tipos, é autor principal de um livro,
 -- e co-autor de filme e música, o que resulta em 3 participações em 3 tipos
--- distintos. O Mestre das Coautorias não é autor principal de nada, mas é 
+-- distintos. O Mestre das Coautorias não é autor principal de nada, mas é
 -- coautor de 2 livros (2 autorias) no mesmo tipo de obra.
 -- Comando SQL:
 SELECT
@@ -341,26 +341,26 @@ ORDER BY TotalAutorias DESC, TiposDeObrasDistintas DESC;
 -- de uma categoria.
 -- A consulta retorna o nome dos usuários que publicaram resenhas
 -- para todas as obras cadastradas em uma determinada categoria, além
--- da própria categoria, do número total de resenhas que aquele 
+-- da própria categoria, do número total de resenhas que aquele
 -- usuário fez na categoria.
 
 -- Instâncias Necessárias:
 -- C3. Instâncias Necessárias:
-INSERT INTO Usuario (id, Nome, Email, Senha) VALUES 
-(60, 'Fã de Anime_C6', 'anime_c6@email.com', '123'), 
-(61, 'Leitor de Terror_C6', 'terror_c6@email.com', '123'), 
+INSERT INTO Usuario (id, Nome, Email, Senha) VALUES
+(60, 'Fã de Anime_C6', 'anime_c6@email.com', '123'),
+(61, 'Leitor de Terror_C6', 'terror_c6@email.com', '123'),
 (62, 'Usuário Casual_C6', 'casual_c6@email.com', '123');
 
-INSERT INTO Categoria (id, Nome) VALUES 
-(60, 'Cyberpunk_C6'), 
+INSERT INTO Categoria (id, Nome) VALUES
+(60, 'Cyberpunk_C6'),
 (61, 'Terror_C6'),
 (62, 'Medieval_C6')
 ON CONFLICT (Nome) DO NOTHING;
 
-INSERT INTO TipoDeObra (id, Nome) VALUES 
+INSERT INTO TipoDeObra (id, Nome) VALUES
 (60, 'Anime_C6'), (61, 'Livro_C6') ON CONFLICT (Nome) DO NOTHING;
 
-INSERT INTO Autor (id, Nome, Verificado) VALUES 
+INSERT INTO Autor (id, Nome, Verificado) VALUES
 (60, 'Katsuhiro Otomo_C6', true),
 (61, 'Stephen King_C6', true);
 
@@ -391,7 +391,7 @@ INSERT INTO Resenha (id, UsuarioID, Cabecalho, Resenha, Nota, Visualizacoes, Obr
 -- A consulta é formulada avaliando o resultado vazio da diferença
 -- entre o conjunto total de obras de uma categoria e o conjunto to-
 -- tal de obras dessa categoria e o conjunto de obras que o usuário
--- efetivamente resenhou. 
+-- efetivamente resenhou.
 
 -- Comando SQL:
 SELECT DISTINCT
@@ -421,24 +421,24 @@ WHERE NOT EXISTS (
 
 -- ================================================================
 -- Consulta 7 - Autores com obras em múltiplas categorias
--- A consulta retorna o nome dos autores que possuem obras de sua 
+-- A consulta retorna o nome dos autores que possuem obras de sua
 -- autoria cadastradas em mais de uma categoria diferente no sistema.
 -- Além disso, retorna a quantidade de categorias distintas em que o ator atua.
 
 -- Instâncias Necessárias:
-INSERT INTO Categoria (id, Nome) VALUES 
-(70, 'Romance_C7'), (71, 'Conto_C7') 
+INSERT INTO Categoria (id, Nome) VALUES
+(70, 'Romance_C7'), (71, 'Conto_C7')
 ON CONFLICT (Nome) DO NOTHING;
 
-INSERT INTO TipoDeObra (id, Nome) VALUES 
-(70, 'Literatura_C7') 
+INSERT INTO TipoDeObra (id, Nome) VALUES
+(70, 'Literatura_C7')
 ON CONFLICT (Nome) DO NOTHING;
 
-INSERT INTO Autor (id, Nome, Verificado) VALUES 
-(70, 'Machado de Assis_C7', true), 
+INSERT INTO Autor (id, Nome, Verificado) VALUES
+(70, 'Machado de Assis_C7', true),
 (71, 'J.R.R. Tolkien_C7', true);
 
-INSERT INTO Obras (id, Nome, AutorID, TipoDeObraID, CategoriaID) VALUES 
+INSERT INTO Obras (id, Nome, AutorID, TipoDeObraID, CategoriaID) VALUES
 (70, 'Dom Casmurro_C7', 70, 70, 70),        -- Machado: Romance
 (71, 'O Alienista_C7', 70, 70, 71),         -- Machado: Conto
 (72, 'O Hobbit_C7', 71, 70, 70),            -- Tolkien: Romance
@@ -457,7 +457,7 @@ FROM Autor a
 JOIN Obras o ON a.id = o.AutorID
 JOIN Categoria c ON o.CategoriaID = c.id
 GROUP BY a.id, a.Nome
-HAVING COUNT(DISTINCT c.id) > 1
+HAVING COUNT(DISTINCT c.id) > 1;
 -- ================================================================
 
 -- ================================================================
@@ -467,15 +467,15 @@ HAVING COUNT(DISTINCT c.id) > 1
 -- creveu (auto-engajamento).
 
 -- Instâncias Necessárias:
-INSERT INTO Usuario (id, Nome, Email, Senha) VALUES 
-(80, 'Vaidoso_C8', 'vai_c8@email.com', '123'), 
+INSERT INTO Usuario (id, Nome, Email, Senha) VALUES
+(80, 'Vaidoso_C8', 'vai_c8@email.com', '123'),
 (81, 'Critico_C8', 'crit_c8@email.com', '123');
 
 INSERT INTO Categoria (id, Nome) VALUES (80, 'Rock_C8') ON CONFLICT DO NOTHING;
 INSERT INTO TipoDeObra (id, Nome) VALUES (80, 'Música_C8') ON CONFLICT DO NOTHING;
 INSERT INTO Autor (id, Nome, Verificado) VALUES (80, 'Jack Black_C8', true);
 
-INSERT INTO Obras (id, Nome, AutorID, TipoDeObraID, CategoriaID) VALUES 
+INSERT INTO Obras (id, Nome, AutorID, TipoDeObraID, CategoriaID) VALUES
 (80, 'Obra Analisada_C8', 80, 80, 80);
 
 -- Resenha feita pelo usuário 'Vaidoso'
@@ -502,23 +502,23 @@ FROM Usuario u
 JOIN Comentarios c ON u.id = c.UsuarioID
 JOIN Resenha r ON c.ResenhaID = r.id
 JOIN Obras o ON r.ObraID = o.id
-WHERE c.UsuarioID = r.UsuarioID
+WHERE c.UsuarioID = r.UsuarioID;
 
 -- ================================================================
 
 -- ================================================================
 -- Consulta 9 - Obras mais bem avaliadas por Tipo e Categoria
 -- A consulta retorna o titulo, tipo de obra, a categoria, o título,
--- data de publicação e nota média consolidada das obras que possuem a 
+-- data de publicação e nota média consolidada das obras que possuem a
 -- maior nota média dentro do par TipoDeObra e Categoria.
 
 -- Instâncias Necessárias:
-INSERT INTO Categoria (id, Nome) VALUES 
-(90, 'Ação_C9'), (91, 'Romance_C9') 
+INSERT INTO Categoria (id, Nome) VALUES
+(90, 'Ação_C9'), (91, 'Romance_C9')
 ON CONFLICT (Nome) DO NOTHING;
 
-INSERT INTO TipoDeObra (id, Nome) VALUES 
-(90, 'Filme_C9'), (91, 'Curta-metragem_C9') 
+INSERT INTO TipoDeObra (id, Nome) VALUES
+(90, 'Filme_C9'), (91, 'Curta-metragem_C9')
 ON CONFLICT (Nome) DO NOTHING;
 
 INSERT INTO Autor (id, Nome, Verificado) VALUES
@@ -532,7 +532,7 @@ INSERT INTO Usuario (id, Nome, Email, Senha) VALUES
 -- 91: Filme de Ação (Nota 10) - Vencedor do grupo Filme/Ação
 -- 92: Filme de Romance (Nota 7) - Vencedor do grupo Filme/Romance
 -- 93: Curta de Ação (Nota 9) - Vencedor do grupo Curta/Ação
-INSERT INTO Obras (id, Nome, Descricao, Publicacao, Capa, AutorID, TipoDeObraID, CategoriaID) VALUES 
+INSERT INTO Obras (id, Nome, Descricao, Publicacao, Capa, AutorID, TipoDeObraID, CategoriaID) VALUES
 (90, 'True Lies_C9', 'Espionagem', '1994-07-15', 'truelies.png', 90, 90, 90),
 (91, 'O Exterminador do Futuro 2_C9', 'Ciborgue', '1991-07-03', 't2.png', 90, 90, 90),
 (92, 'Titanic_C9', 'Navio', '1997-12-19', 'titanic.png', 90, 90, 91),
@@ -560,7 +560,7 @@ FROM vw_resumo_avaliacoes_obras v
 JOIN Obras o ON v.ObraID = o.id
 JOIN Autor a ON o.AutorID = a.id
 WHERE v.NotaMedia = (
-    -- Busca a nota máxima isolada para o tipo e categoria da linha 
+    -- Busca a nota máxima isolada para o tipo e categoria da linha
     -- de 'v' atual sendo avalida.
     SELECT MAX (v2.NotaMedia)
     FROM vw_resumo_avaliacoes_obras v2
@@ -573,33 +573,33 @@ WHERE v.NotaMedia = (
 -- Consulta 10 - Ranking das Obras Filhas de uma Obra
 -- A consulta retorna o nome de uma obra principal (ex: álbum), o nome de
 -- suas obras derivadas (ex: músicas do álbum) e a nota média conso-
--- lidada de cada uma dessas obras filhas. O resultado é ordenado da 
+-- lidada de cada uma dessas obras filhas. O resultado é ordenado da
 -- obra filha mais bem avaliada para a menos bem avaliada. Neste caso
 -- utilizamos o nome da obra principal como sendo 'The Dark Side of the Moon'
 -- como exemplo.
 
 -- Instâncias Necessárias:
-INSERT INTO Usuario (id, Nome, Email, Senha) VALUES 
-(100, 'Ouvinte_C10', 'ouvinte_c10@email.com', '123') 
+INSERT INTO Usuario (id, Nome, Email, Senha) VALUES
+(100, 'Ouvinte_C10', 'ouvinte_c10@email.com', '123')
 ON CONFLICT DO NOTHING;
 
-INSERT INTO Categoria (id, Nome) VALUES 
-(100, 'Rock_C10') 
+INSERT INTO Categoria (id, Nome) VALUES
+(100, 'Rock_C10')
 ON CONFLICT (Nome) DO NOTHING;
 
-INSERT INTO TipoDeObra (id, Nome) VALUES 
-(100, 'Álbum_C10'), (101, 'Música_C10') 
+INSERT INTO TipoDeObra (id, Nome) VALUES
+(100, 'Álbum_C10'), (101, 'Música_C10')
 ON CONFLICT (Nome) DO NOTHING;
 
-INSERT INTO Autor (id, Nome, Verificado) VALUES 
+INSERT INTO Autor (id, Nome, Verificado) VALUES
 (100, 'Pink Floyd_C10', true);
 
 -- Inserindo a Obra Principal
-INSERT INTO Obras (id, Nome, Descricao, Publicacao, Capa, AutorID, TipoDeObraID, CategoriaID) VALUES 
+INSERT INTO Obras (id, Nome, Descricao, Publicacao, Capa, AutorID, TipoDeObraID, CategoriaID) VALUES
 (100, 'The Dark Side of the Moon_C10', 'Álbum icônico', '1973-03-01', 'darkside.png', 100, 100, 100);
 
 -- Inserindo as Obras Derivadas (As Músicas Filhas apontando para o Álbum Pai)
-INSERT INTO Obras (id, Nome, AutorID, TipoDeObraID, CategoriaID, Relacionado) VALUES 
+INSERT INTO Obras (id, Nome, AutorID, TipoDeObraID, CategoriaID, Relacionado) VALUES
 (101, 'Time_C10', 100, 101, 100, 100),
 (102, 'Money_C10', 100, 101, 100, 100),
 (103, 'Us and Them_C10', 100, 101, 100, 100);

@@ -75,12 +75,12 @@ def main(
     try:
         selected_mode: QueryMode = mode if mode is not None else QueryMode(os.getenv("QUERY_MODE", "orm"))
     except ValueError:
-        raise typer.BadParameter("Use orm ou positional.", param_hint="QUERY_MODE") from None
+        raise typer.BadParameter("Use orm ou positional.", param_hint="QUERY_MODE")
     queries: Mapping[int, QueryStatement] = ORM_QUERIES if selected_mode == QueryMode.ORM else POSITIONAL_QUERIES
 
     database_url: str | None = os.getenv("DATABASE_URL")
     if not database_url:
-        typer.echo("Defina DATABASE_URL com a URI PostgreSQL do Supabase.", err=True)
+        typer.echo("Defina DATABASE_URL com a URI para o Banco de Dados PostgreSQL.", err=True)
         raise typer.Exit(code=1)
 
     engine: Engine | None = None
