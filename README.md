@@ -1,6 +1,6 @@
 # Parte III — aplicativo de consultas
 
-CLI em Python que executa as dez consultas da Parte II em um banco PostgreSQL usando SQL com parâmetros posicionais. O [`app.py`](final_project_phase_3/app.py) mantém uma conexão aberta enquanto o menu está em uso. O esquema e as instâncias de teste de origem estão em [`tabelas.sql`](final_project_phase_1-2/tabelas.sql) e [`consultas.sql`](final_project_phase_1-2/consultas.sql).
+CLI em Python que executa as dez consultas da Parte II em um banco PostgreSQL. O [`app.py`](final_project_phase_3/app.py) mantém uma conexão aberta enquanto o menu está em uso. O esquema e as instâncias de teste de origem estão em [`tabelas.sql`](final_project_phase_1-2/tabelas.sql) e [`consultas.sql`](final_project_phase_1-2/consultas.sql).
 
 ## Banco de dados
 
@@ -23,7 +23,7 @@ python3 -m pip install -r requirements.txt
 No zsh, solicite a URI sem exibi-la no terminal e inicie o programa:
 
 ```zsh
-read -s 'DATABASE_URL?URI do Supabase: '
+read -s 'DATABASE_URL?URI do PostgreSQL: '
 export DATABASE_URL
 python3 app.py
 unset DATABASE_URL
@@ -33,7 +33,7 @@ Como alternativa, defina `DATABASE_URL` em `final_project_phase_3/.env`. O progr
 
 Variáveis já definidas no ambiente têm prioridade sobre o `.env`.
 
-O aplicativo usa SQLAlchemy Core 2 para conexão e transações, com psycopg 3 como driver PostgreSQL. As consultas em [`internal/queries.py`](final_project_phase_3/internal/queries.py) mantêm os placeholders `%s` e recebem os valores em tuplas. Cada consulta tem sua própria transação; falhas causam rollback e permitem continuar usando o menu.
+O aplicativo usa SQLAlchemy Core 2 para conexão e transações, com psycopg 3 como driver PostgreSQL. As consultas 6 e 10 em [`internal/queries.py`](final_project_phase_3/internal/queries.py) usam placeholders `%s` e recebem os valores em tuplas. Cada consulta tem sua própria transação; falhas causam rollback e permitem continuar usando o menu.
 
 ### Autores
 
