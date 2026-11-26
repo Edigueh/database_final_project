@@ -1,4 +1,7 @@
 from dataclasses import dataclass
+from typing import TypeAlias
+
+DatabaseRow: TypeAlias = tuple[object, ...]
 
 
 @dataclass(frozen=True)

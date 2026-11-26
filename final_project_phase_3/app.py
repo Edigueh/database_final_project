@@ -1,40 +1,34 @@
 import os
-from collections.abc import Mapping
-from enum import Enum
 from pathlib import Path
-from typing import Annotated, cast
+from typing import cast
 
 import typer
 from dotenv import load_dotenv
-from orm.queries import QUERIES as ORM_QUERIES
-from positional_params.queries import QUERIES as POSITIONAL_QUERIES
-from shared.display_results import display_results
-from shared.reports import REPORTS, Report
-from shared.types import DatabaseRow, QueryStatement
+from internal.queries import QUERIES
+from internal.types import REPORTS, DatabaseRow, Report
 from sqlalchemy import create_engine
-from sqlalchemy.engine import URL, Engine, make_url
+from sqlalchemy.engine import URL, Connection, Engine, make_url
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.orm import Session
 from tabulate import tabulate
 
 
-class QueryMode(str, Enum):
-    ORM = "orm"
-    POSITIONAL = "positional"
+def display_results(columns: list[str], rows: list[DatabaseRow]) -> None:
+    if not rows:
+        typer.echo("Sem resultados.")
+        return
+
+    values: list[list[object]] = [["NULL" if value is None else value for value in row] for row in rows]
+    typer.echo(tabulate(values, headers=columns, tablefmt="fancy_grid"))
 
 
 def execute_query(
-    session: Session, statement: QueryStatement, param_value: str | None = None
+    connection: Connection, statement: str, param_value: str | None = None
 ) -> tuple[list[str], list[DatabaseRow]]:
-    result = (
-        session.connection().exec_driver_sql(statement, (param_value,) if param_value is not None else ())
-        if isinstance(statement, str)
-        else session.execute(statement, {"value": param_value} if param_value is not None else None)
-    )
+    result = connection.exec_driver_sql(statement, (param_value,) if param_value is not None else ())
     return list(result.keys()), [tuple(row) for row in result.all()]
 
 
-def run_menu(session: Session, queries: Mapping[int, QueryStatement]) -> None:
+def run_menu(connection: Connection) -> None:
     while True:
         typer.echo("\nConsultas da Parte II")
         menu: list[tuple[int, str]] = [(number, report.title) for number, report in REPORTS.items()]
@@ -55,8 +49,8 @@ def run_menu(session: Session, queries: Mapping[int, QueryStatement]) -> None:
             param_value = cast(str, typer.prompt(report.parameter_prompt)).strip()
 
         try:
-            with session.begin():
-                columns, rows = execute_query(session, queries[number], param_value)
+            with connection.begin():
+                columns, rows = execute_query(connection, QUERIES[number], param_value)
         except SQLAlchemyError as error:
             typer.echo(f"Erro ao executar a consulta: {error}")
             continue
@@ -65,18 +59,8 @@ def run_menu(session: Session, queries: Mapping[int, QueryStatement]) -> None:
         display_results(columns, rows)
 
 
-def main(
-    mode: Annotated[
-        QueryMode | None,
-        typer.Option("--mode", help="Modo de consulta; padrão: QUERY_MODE ou orm."),
-    ] = None,
-) -> None:
-    _ = load_dotenv(Path(__file__).with_name(".env"))
-    try:
-        selected_mode: QueryMode = mode if mode is not None else QueryMode(os.getenv("QUERY_MODE", "orm"))
-    except ValueError:
-        raise typer.BadParameter("Use orm ou positional.", param_hint="QUERY_MODE")
-    queries: Mapping[int, QueryStatement] = ORM_QUERIES if selected_mode == QueryMode.ORM else POSITIONAL_QUERIES
+def main() -> None:
+    load_dotenv(Path(__file__).with_name(".env"))
 
     database_url: str | None = os.getenv("DATABASE_URL")
     if not database_url:
@@ -87,8 +71,8 @@ def main(
     try:
         url: URL = make_url(database_url)
         engine = create_engine(url.set(drivername="postgresql+psycopg"), pool_pre_ping=True)
-        with engine.connect() as connection, Session(bind=connection) as session:
-            run_menu(session, queries)
+        with engine.connect() as connection:
+            run_menu(connection)
     except (SQLAlchemyError, ValueError) as error:
         typer.echo(f"Erro ao conectar ao PostgreSQL: {error}", err=True)
         raise typer.Exit(code=1) from error
