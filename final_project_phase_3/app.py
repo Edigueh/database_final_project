@@ -35,7 +35,7 @@ def run_menu(connection: Connection) -> None:
         menu.append((0, "Sair"))
         typer.echo(tabulate(menu, headers=("Opção", "Consulta"), tablefmt="fancy_grid"))
 
-        selection: str = cast(str, typer.prompt("Selecione uma opção")).strip()
+        selection: str = typer.prompt("Selecione uma opção").strip()
         if selection == "0":
             return
         if not selection.isdecimal() or int(selection) not in REPORTS:
@@ -46,7 +46,7 @@ def run_menu(connection: Connection) -> None:
         report: Report = REPORTS[number]
         param_value: str | None = None
         if report.parameter_prompt:
-            param_value = cast(str, typer.prompt(report.parameter_prompt)).strip()
+            param_value = typer.prompt(report.parameter_prompt).strip()
 
         try:
             with connection.begin():
@@ -70,8 +70,12 @@ def main() -> None:
     engine: Engine | None = None
     try:
         url: URL = make_url(database_url)
+        typer.echo("URL criada.")
+        # pool_pre_ping checa se a conexão por pooling ainda está ativa antes de usar.
         engine = create_engine(url.set(drivername="postgresql+psycopg"), pool_pre_ping=True)
+        typer.echo("Mecanismo de conexão criado.")
         with engine.connect() as connection:
+            typer.echo("Conexão ao Banco de Dados efetuada.")
             run_menu(connection)
     except (SQLAlchemyError, ValueError) as error:
         typer.echo(f"Erro ao conectar ao PostgreSQL: {error}", err=True)
@@ -81,6 +85,7 @@ def main() -> None:
     finally:
         if engine is not None:
             engine.dispose()
+            typer.echo("Mecanismo de conexão encerrado.")
 
 
 if __name__ == "__main__":
