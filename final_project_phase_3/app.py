@@ -1,6 +1,5 @@
 import os
 from pathlib import Path
-from typing import cast
 
 import typer
 from dotenv import load_dotenv
